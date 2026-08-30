@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-obsidian: #0b0e14;
+  --bg-slate: #131722;
+}
+
+body {
+  background-color: var(--bg-obsidian);
+  background-image:
+    radial-gradient(ellipse at top, rgba(112, 0, 255, 0.12), transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(0, 240, 255, 0.08), transparent 55%);
+  color: #e6f1ff;
+  font-family: "Inter", "Plus Jakarta Sans", sans-serif;
+}
+
+.font-display {
+  font-family: "Rajdhani", "Orbitron", sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.glass-panel {
+  background: rgba(19, 23, 34, 0.6);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-border {
+  position: relative;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.glow-border:hover {
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.35);
+  transform: translateY(-3px);
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.12) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+.rarity-thuong {
+  color: #9fb3c8;
+  border-color: rgba(159, 179, 200, 0.4);
+}
+.rarity-vip {
+  color: #ffd700;
+  border-color: rgba(255, 215, 0, 0.5);
+}
+.rarity-sieure {
+  color: #00f0ff;
+  border-color: rgba(0, 240, 255, 0.5);
+}
+.rarity-docnhat {
+  color: #ff0055;
+  border-color: rgba(255, 0, 85, 0.5);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
