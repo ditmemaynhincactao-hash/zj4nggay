@@ -43,7 +43,8 @@ export default function CheckoutModal({ account, onClose }: CheckoutModalProps) 
   }
 
   function copyCreds() {
-    navigator.clipboard?.writeText(`user_${account.id} / pass_${account.id} / 2FA_492113`);
+navigator.clipboard?.writeText(`user_${account!.id} / pass_${account!.id} / 2FA_492113`);
+
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
