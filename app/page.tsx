@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import FilterPanel from "@/components/FilterPanel";
 import AccountCard, { AccountCardSkeleton } from "@/components/AccountCard";
 import DetailModal from "@/components/DetailModal";
 import CheckoutModal from "@/components/CheckoutModal";
-import { ACCOUNTS } from "@/lib/mockData";
+import { supabase, SupabaseAccountRow } from "@/lib/supabaseClient";
 import { AccountListing, FilterState } from "@/lib/types";
 
 const DEFAULT_FILTERS: FilterState = {
@@ -21,14 +21,63 @@ const DEFAULT_FILTERS: FilterState = {
   rareItemsOnly: false,
 };
 
+function mapRowToListing(row: SupabaseAccountRow): AccountListing {
+  const discountPercent =
+    row.price_original > 0
+      ? Math.round(100 - (row.price_sale / row.price_original) * 100)
+      : 0;
+  return {
+    id: String(row.id),
+    game: row.game as AccountListing["game"],
+    title: row.title,
+    images: [row.image_url, row.image_url, row.image_url],
+    rarity: row.rarity as AccountListing["rarity"],
+    rank: row.rank,
+    server: "SEA",
+    level: 0,
+    registeredEmail: true,
+    registeredPhone: false,
+    registeredFacebook: true,
+    infoVerified: true,
+    warrantyDays: 7,
+    priceOriginal: row.price_original,
+    discountPercent,
+    priceSale: row.price_sale,
+    createdAt: row.created_at,
+    rareItems: [],
+    gallery: [row.image_url, row.image_url],
+    specs: {},
+  };
+}
+
 export default function Home() {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [accounts, setAccounts] = useState<AccountListing[]>([]);
   const [detailAccount, setDetailAccount] = useState<AccountListing | null>(null);
   const [checkoutAccount, setCheckoutAccount] = useState<AccountListing | null>(null);
 
+  useEffect(() => {
+    async function fetchAccounts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("accounts")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching accounts:", error.message);
+        setAccounts([]);
+      } else if (data) {
+        setAccounts(data.map(mapRowToListing));
+      }
+      setLoading(false);
+    }
+    fetchAccounts();
+  }, []);
+
   const filteredAccounts = useMemo(() => {
-    let list = [...ACCOUNTS];
+    let list = [...accounts];
 
     if (filters.game !== "all") list = list.filter((a) => a.game === filters.game);
     list = list.filter((a) => a.priceSale <= filters.priceRange[1]);
@@ -52,12 +101,10 @@ export default function Home() {
         list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
     return list;
-  }, [filters]);
+  }, [filters, accounts]);
 
   function handleFilterChange(next: FilterState) {
-    setLoading(true);
     setFilters(next);
-    setTimeout(() => setLoading(false), 400);
   }
 
   return (
